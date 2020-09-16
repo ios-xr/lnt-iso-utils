@@ -1,0 +1,99 @@
+#!/usr/bin/python3
+
+import os
+import sys
+import argparse
+import tempfile
+import subprocess
+
+tools = {'isoinfo':
+         {'packages': {'redhat': 'genisoimage',
+                       'ubuntu': 'genisoimage'}}
+      }
+
+distros = {'redhat': {'installcmd': 'sudo yum install'},
+           'ubuntu': {'installcmd': 'sudo apt-get install'}}
+
+
+def lookup_in_path(fn, paths):
+    for path in paths:
+        pathname = os.path.join(path, fn)
+        if os.path.isfile(pathname) and os.access(pathname, os.X_OK):
+            return pathname
+    return None
+
+def get_utility_path(tool_name):
+    # Look in path
+    pathname = lookup_in_path(tool_name, os.environ["PATH"].split(os.pathsep))
+    if pathname is None:
+        # Can't find it
+        tool_info = tools[tool_name]
+        tool_pkgs = tool_info['packages']
+        suggested_commands = "\n".join([
+            "  ({distro}): {installcmd} {pkg}\n".format(distro=distro,
+                                                        installcmd=distros[distro]['installcmd'],
+                                                        pkg=tool_pkgs[distro])
+                              for distro in sorted(tool_pkgs.keys())])
+        print("""Cannot find tool '{tool}'.
+
+It may be possible to install it using:
+
+{suggested_commands}
+        """.format(tool=tool_name, suggested_commands=suggested_commands), file=sys.stderr)
+        sys.exit(1)
+    return pathname
+    
+    
+
+# Parse arguments
+parser = argparse.ArgumentParser(description="Extract RPMs from ISO")
+parser.add_argument('iso', help='Path to ISO file for extraction')
+parser.add_argument('--output-dir',
+                    help='Where to put extracted RPMs')
+
+args = parser.parse_args()
+
+if not os.path.exists(args.iso):
+    print("Could not find ISO file '{}'".format(args.iso), file=sys.stderr)
+    sys.exit(1)
+# Double check that ISO file exists (for better error reporting)
+# @@@b
+
+with tempfile.TemporaryDirectory() as tmpdir:
+    isoinfo = get_utility_path('isoinfo')
+
+    image_script = os.path.join(tmpdir, "image.py")
+
+    # Call "isoinfo" to extract the "image.py" script
+    with open(image_script, "wb") as image_script_file:
+        result = subprocess.run(["isoinfo", "-i", args.iso, "-R", 
+                                 "-x", "/tools/image.py"],
+                                stdout = image_script_file)
+
+        if result.returncode != 0:
+            print("""
+Failed to extract image script from ISO. Verify that '{iso}' is
+an IOS XR image of a suitable version.
+""".format(iso=args.iso), file=sys.stderr)
+            sys.exit(1)
+
+        # Check length
+        if os.path.getsize(image_script) == 0:
+            print("""
+Did not find image script in ISO. Verify that '{iso}' is
+an IOS XR image of a suitable version.
+""".format(iso=args.iso), file=sys.stderr)
+            sys.exit(1)
+
+            
+ 
+
+    # Check signature
+    # @@@
+
+
+    # Call "image.py" to extract the ISO
+    rpms_result = subprocess.run(["python3", image_script, "extract-rpms",
+                                  "--iso", args.iso,
+                                  "--output-dir", args.output_dir])
+                                  
