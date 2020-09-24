@@ -19,7 +19,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
         base_dfpath = os.path.join(tmpdir, base_df)
         with open(base_dfpath, "w") as f:
             f.write(template.render(base=base))
-        subprocess.run(['sudo', '/ecs/utils/container/bin/supodman', 'build', '-f', base_dfpath], check=True)
+        subprocess.run(['sudo', '/ecs/utils/container/bin/subuildah', 'bud', '-f', base_dfpath], check=True)
 
 
 
