@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/auto/ensoft/bin/python3
 
 import os
 import jinja2
