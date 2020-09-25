@@ -1,6 +1,7 @@
-#!/auto/ensoft/bin/python3
+#!/router/bin/python3.8.2_mcpre-v1
 
 import os
+import sys
 import jinja2
 import tempfile
 import subprocess
@@ -33,7 +34,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
             sys.exit(1)
         else:
             imageid = res.stdout
-        cmd = buildah + ['commit' + imageid + "xrscripttest"]
+        cmd = buildah + ['commit', imageid, "xrscripttest"]
         res = subprocess.run(cmd, capture_output=True)
         print(res.stderr, file=sys.stderr)
         if res.returncode != 0:
