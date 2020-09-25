@@ -27,7 +27,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
             f.write(template.render(base=base))
         cmd = buildah + ['bud', '-t', 'xrscripttest', '-f', base_dfpath, context_dir]
         res = subprocess.run(cmd, capture_output=True)
-        print(res.stderr, file=sys.stderr)
+        sys.stderr.buffer.write(res.stderr)
         if res.returncode != 0:
             print("Buildah command failed: {}", repr(cmd))
             sys.exit(1)
