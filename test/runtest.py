@@ -37,6 +37,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
         cmd = buildah + ['commit', imageid, "xrscripttest"]
         res = subprocess.run(cmd, capture_output=True)
         print(res.stderr, file=sys.stderr)
+        print(res.stdout)
         if res.returncode != 0:
             print("Buildah command failed: {}", repr(cmd))
             sys.exit(1)
