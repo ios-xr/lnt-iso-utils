@@ -26,7 +26,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
         base_dfpath = os.path.join(dockerfile_dir, base_df)
         with open(base_dfpath, "w") as f:
             f.write(template.render(base=base))
-        cmd = buildah + ['bud', '-f', base_dfpath, context_dir]
+        cmd = buildah + ['bud', '-t', 'xrscripttest', '-f', base_dfpath, context_dir]
         res = subprocess.run(cmd, capture_output=True)
         print(res.stderr, file=sys.stderr)
         if res.returncode != 0:
@@ -34,14 +34,3 @@ with tempfile.TemporaryDirectory() as tmpdir:
             sys.exit(1)
         else:
             imageid = res.stdout
-        cmd = buildah + ['commit', imageid, "xrscripttest"]
-        res = subprocess.run(cmd, capture_output=True)
-        print(res.stderr, file=sys.stderr)
-        print(res.stdout)
-        if res.returncode != 0:
-            print("Buildah command failed: {}", repr(cmd))
-            sys.exit(1)
-
-
-
-
