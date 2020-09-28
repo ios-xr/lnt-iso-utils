@@ -1,3 +1,3 @@
 FROM {{base}}
-#COPY xr-image-extract-rpms
-#COPY test-xr-image-extract-rpms
+COPY xr-image-extract-rpms /usr/bin
+COPY test-xr-image-extract-rpms /usr/bin
