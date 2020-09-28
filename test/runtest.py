@@ -2,6 +2,7 @@
 
 import os
 import jinja2
+import shutil
 import tempfile
 import subprocess
 
@@ -27,8 +28,8 @@ with tempfile.TemporaryDirectory() as tmpdir:
         base_dfpath = os.path.join(dockerfile_dir, base_df)
 
         for f in files:
-            os.link(os.path.join('..', f), 
-                    os.path.join(context_dir, os.path.basename(f)))
+            shutil.copyfile(os.path.join('..', f), 
+                            os.path.join(context_dir, os.path.basename(f)))
 
         with open(base_dfpath, "w") as f:
             f.write(template.render(base=base))
