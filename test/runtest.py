@@ -8,6 +8,9 @@ import tempfile
 import subprocess
 
 buildah = ['sudo', '/ecs/utils/container/bin/subuildah']
+podman = ['sudo', '/ecs/utils/container/bin/supodman']
+
+imagename = 'xrscripttest'
 
 bases = ['debian']
 
@@ -33,8 +36,9 @@ with tempfile.TemporaryDirectory() as tmpdir:
                             os.path.join(context_dir, os.path.basename(f)))
 
         with open(base_dfpath, "w") as f:
-            f.write(template.render(base=base))
-        cmd = buildah + ['bud', '-t', 'xrscripttest', '-f', base_dfpath, context_dir]
+            f.write(template.render(base=base, files=[os.path.basename(f) for f in files]))
+            os.system("grep '' '{}'".format(base_dfpath))
+        cmd = buildah + ['bud', '-t', imagename, '-f', base_dfpath, context_dir]
         res = subprocess.run(cmd, capture_output=True)
         sys.stderr.buffer.write(res.stderr)
         if res.returncode != 0:
@@ -42,3 +46,10 @@ with tempfile.TemporaryDirectory() as tmpdir:
             sys.exit(1)
         else:
             imageid = res.stdout
+
+        cmd = podman + ['run', imagename]
+        subprocess.run(cmd)
+
+
+
+

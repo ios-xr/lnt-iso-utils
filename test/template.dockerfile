@@ -1,3 +1,6 @@
 FROM {{base}}
-COPY xr-image-extract-rpms /usr/bin
-COPY test-xr-image-extract-rpms /usr/bin
+{% for file in files %}
+COPY {{file}} /usr/bin
+{% endfor %}
+CMD echo lots of weasels
+
