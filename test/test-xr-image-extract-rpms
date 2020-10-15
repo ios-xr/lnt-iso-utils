@@ -1,0 +1,6 @@
+#!/bin/sh
+
+ls -l /usr/bin/xr-*
+grep '' /usr/bin/xr-*
+/usr/bin/xr-image-extract-rpms
+

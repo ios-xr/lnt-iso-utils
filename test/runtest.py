@@ -14,7 +14,10 @@ imagename = 'xrscripttest'
 
 bases = ['debian']
 
-files = ['xr-image-extract-rpms', 'test/test-xr-image-extract-rpms']
+files = ['xr-image-extract-rpms', 'packages-{base}',
+         'test/test-xr-image-extract-rpms']
+
+isos = ['/release/IOX/bin/7.2.1/8000-x64-7.2.1.iso']
 
 tenv = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
 template = tenv.get_template("template.dockerfile")
@@ -32,11 +35,18 @@ with tempfile.TemporaryDirectory() as tmpdir:
         base_dfpath = os.path.join(dockerfile_dir, base_df)
 
         for f in files:
-            shutil.copyfile(os.path.join('..', f), 
-                            os.path.join(context_dir, os.path.basename(f)))
+            f_base = f.format(base=base)
+            f_gen = f.format(base="current")
+            shutil.copyfile(os.path.join('..', f_base), 
+                            os.path.join(context_dir, os.path.basename(f_gen)))
+            shutil.copymode(os.path.join('..', f_base), 
+                            os.path.join(context_dir, os.path.basename(f_gen)))
+        for i in isos:
+            shutil.copyfile(i, os.path.join(context_dir, os.path.basename(i)))
 
         with open(base_dfpath, "w") as f:
-            f.write(template.render(base=base, files=[os.path.basename(f) for f in files]))
+            f.write(template.render(base=base, files=[os.path.basename(f.format(base="current")) for f in files],
+                                               isos=[os.path.basename(i) for i in isos])) 
             os.system("grep '' '{}'".format(base_dfpath))
         cmd = buildah + ['bud', '-t', imagename, '-f', base_dfpath, context_dir]
         res = subprocess.run(cmd, capture_output=True)
