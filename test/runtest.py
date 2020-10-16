@@ -1,4 +1,4 @@
-#!/router/bin/python3.8.2_mcpre-v1
+#!/router/bin/python3.8.2_mcpre-v1 -u
 
 import os
 import sys
@@ -12,7 +12,8 @@ podman = ['sudo', '/ecs/utils/container/bin/supodman']
 
 imagename = 'xrscripttest'
 
-bases = ['debian']
+bases = {'debian': {'from': 'debian'},
+         'centos7': {'from': 'centos:centos7'}}
 
 files = ['xr-image-extract-rpms', 'packages-{base}',
          'test/test-xr-image-extract-rpms']
@@ -30,7 +31,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
     os.mkdir(context_dir)
 
 
-    for base in bases:
+    for base, base_info in bases.items():
         base_df = '{}.dockerfile'.format(base)
         base_dfpath = os.path.join(dockerfile_dir, base_df)
 
@@ -45,7 +46,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
             shutil.copyfile(i, os.path.join(context_dir, os.path.basename(i)))
 
         with open(base_dfpath, "w") as f:
-            f.write(template.render(base=base, files=[os.path.basename(f.format(base="current")) for f in files],
+            f.write(template.render(base=base, from_=base_info["from"], files=[os.path.basename(f.format(base="current")) for f in files],
                                                isos=[os.path.basename(i) for i in isos])) 
             os.system("grep '' '{}'".format(base_dfpath))
         cmd = buildah + ['bud', '-t', imagename, '-f', base_dfpath, context_dir]

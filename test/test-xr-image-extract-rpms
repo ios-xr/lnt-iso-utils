@@ -1,6 +1,19 @@
 #!/bin/sh
 
-ls -l /usr/bin/xr-*
-grep '' /usr/bin/xr-*
-/usr/bin/xr-image-extract-rpms
+fail()
+{
+    echo "FAIL: $1" 1>&2
+    rm -rf "$RPM_DIR"
+    exit 1
+}
+ls -l /images
+RPM_DIR=$(mktemp -d)
+/usr/bin/xr-image-extract-rpms --output-dir "$RPM_DIR" /images/8000-x64-7.2.1.iso || fail "Error extracting images"
+
+find "$RPM_DIR" -type f -name "*.rpm" | grep -q '\.rpm$' || fail "No RPMs extracted"
+find "$RPM_DIR" -type f -name "*.rpm" | head -5
+
+rm -rf "$RPM_DIR"
+
+echo PASS
 

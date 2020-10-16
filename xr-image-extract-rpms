@@ -8,7 +8,10 @@ import subprocess
 
 tools = {'isoinfo':
          {'packages': {'redhat': 'genisoimage',
-                       'ubuntu': 'genisoimage'}}
+                       'ubuntu': 'genisoimage'}},
+        'cpio':
+         {'packages': {'redhat': 'cpio',
+                       'ubuntu': 'cpio'}},
       }
 
 distros = {'redhat': {'installcmd': 'sudo yum install'},
@@ -96,4 +99,10 @@ an IOS XR image of a suitable version.
     rpms_result = subprocess.run(["python3", image_script, "extract-rpms",
                                   "--iso", args.iso,
                                   "--output-dir", args.output_dir])
+
+    if result.returncode != 0:
+        print("""
+RPM extraction failed. See above for error messages.
+""", file=sys.stderr)
+        sys.exit(1)
                                   
