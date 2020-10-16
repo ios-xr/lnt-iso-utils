@@ -3,17 +3,25 @@
 fail()
 {
     echo "FAIL: $1" 1>&2
-    rm -rf "$RPM_DIR"
+    [ -d "$TMP_DIR" ] && rm -rf "$TMP_DIR"
     exit 1
 }
 ls -l /images
-RPM_DIR=$(mktemp -d)
-/usr/bin/xr-image-extract-rpms --output-dir "$RPM_DIR" /images/8000-x64-7.2.1.iso || fail "Error extracting images"
+TMP_DIR=$(mktemp -d) || fail "Unable to make temporary directory for RPM extraction"
+RPM_DIR="$TMP_DIR/rpms"
 
-find "$RPM_DIR" -type f -name "*.rpm" | grep -q '\.rpm$' || fail "No RPMs extracted"
-find "$RPM_DIR" -type f -name "*.rpm" | head -5
+for image in /images/*; do
+    echo "Extracting RPMs from image '$image'"
+    mkdir -p "$RPM_DIR" || fail "Can't make RPM output directory"
+    /usr/bin/xr-image-extract-rpms --output-dir "$RPM_DIR" "$image" || fail "Error extracting images"
 
-rm -rf "$RPM_DIR"
+    find "$RPM_DIR" -type f -name "*.rpm" | grep -q '\.rpm$' || fail "No RPMs extracted"
+    find "$RPM_DIR" -type f -name "*.rpm" | head -5
+
+    rm -rf "$RPM_DIR"
+done
+
+rm -rf "$TMP_DIR"
 
 echo PASS
 

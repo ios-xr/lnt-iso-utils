@@ -5,6 +5,6 @@ COPY {{file}} /usr/bin
 {% for iso in isos %}
 COPY {{iso}} /images/{{iso}}
 {% endfor %}
-RUN /usr/bin/packages-current
+RUN /usr/bin/prep-{{base}} /usr/bin/packages-{{base}}
 ENTRYPOINT test-xr-image-extract-rpms
 

@@ -1,2 +1,1 @@
-yum install -y sudo
-sudo yum -y install python3 genisoimage cpio
+python3 genisoimage cpio
