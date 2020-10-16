@@ -1,0 +1,3 @@
+ - Select a canonical set of distributions to base on
+ - Fix the distribution versions more precisely (eg specific Debian version)
+ - Clean up more carefully at the end
