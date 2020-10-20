@@ -12,8 +12,8 @@ podman = ['sudo', '/ecs/utils/container/bin/supodman']
 
 imagename = 'xrscripttest'
 
-bases = {'debian': {'from': 'debian'},
-         'centos7': {'from': 'centos:centos7'}}
+bases = {'debian': {'from': 'debian:9.13-slim'},
+         'centos': {'from': 'centos:7.0.1406'}}
 
 files = ['xr-image-extract-rpms', 'test/prep-{base}', 'packages-{base}',
          'test/test-xr-image-extract-rpms']
