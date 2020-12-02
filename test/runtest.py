@@ -24,6 +24,13 @@ isos = ['/release/IOX/bin/7.2.1/8000-x64-7.2.1.iso',
 tenv = jinja2.Environment(loader=jinja2.FileSystemLoader("."))
 template = tenv.get_template("template.dockerfile")
 
+def create_dockerfile(fname, base):
+    with open(fname, "w") as f:
+        f.write(template.render(base=base, from_=base_info["from"], files=[os.path.basename(f.format(base=base)) for f in files],
+                                               isos=[os.path.basename(i) for i in isos])) 
+
+
+
 with tempfile.TemporaryDirectory() as tmpdir:
     dockerfile_dir = os.path.join(tmpdir, "dockerfiles")
     os.mkdir(dockerfile_dir)
@@ -45,10 +52,8 @@ with tempfile.TemporaryDirectory() as tmpdir:
         for i in isos:
             shutil.copyfile(i, os.path.join(context_dir, os.path.basename(i)))
 
-        with open(base_dfpath, "w") as f:
-            f.write(template.render(base=base, from_=base_info["from"], files=[os.path.basename(f.format(base=base)) for f in files],
-                                               isos=[os.path.basename(i) for i in isos])) 
-            os.system("grep '' '{}'".format(base_dfpath))
+        create_dockerfile(base_dfpath, base)
+        os.system("grep '' '{}'".format(base_dfpath))
         cmd = buildah + ['bud', '-t', imagename, '-f', base_dfpath, context_dir]
         res = subprocess.run(cmd, capture_output=True)
         sys.stderr.buffer.write(res.stderr)
