@@ -1,2 +1,10 @@
+#- ---------------------------------------------------------------------------
+#- prep-debian -- Set up required packages for Debian
+#- 
+#- December 2020, Patrick Smears
+#- 
+#- Copyright (c) 2020 by Cisco Systems, Inc.
+#- All rights reserved.
+#- ---------------------------------------------------------------------------
 apt-get update
 apt-get install -y python3 genisoimage cpio

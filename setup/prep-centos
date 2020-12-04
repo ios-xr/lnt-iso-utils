@@ -1,1 +1,9 @@
+#- ---------------------------------------------------------------------------
+#- prep-centos -- Set up required packages for CentOS
+#- 
+#- December 2020, Patrick Smears
+#- 
+#- Copyright (c) 2020 by Cisco Systems, Inc.
+#- All rights reserved.
+#- ---------------------------------------------------------------------------
 yum -y install python3 genisoimage cpio

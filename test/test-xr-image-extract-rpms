@@ -1,4 +1,12 @@
 #!/bin/sh
+# -----------------------------------------------------------------------------
+# test-xr-image-extract-rpms -- Test extracting RPMs from ISO
+#
+# December 2020, Patrick Smears
+#
+# Copyright (c) 2020 by Cisco Systems, Inc.
+# All rights reserved.
+# -----------------------------------------------------------------------------
 
 fail()
 {
