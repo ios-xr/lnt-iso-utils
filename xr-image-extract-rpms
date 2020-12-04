@@ -1,4 +1,12 @@
 #!/usr/bin/python3
+# -----------------------------------------------------------------------------
+# xr-image-extract-rpms -- Extract RPMs from a Cisco IOS XR LNT ISO image
+#
+# December 2020, Patrick Smears
+#
+# Copyright (c) 2020 by Cisco Systems, Inc.
+# All rights reserved.
+# -----------------------------------------------------------------------------
 
 import os
 import sys

@@ -3,6 +3,6 @@ FROM {{from_}}
 {% endfor %}
 {% for iso in isos %}COPY {{iso}} /images/{{iso}}
 {% endfor %}
-RUN /usr/bin/prep-{{base}} /usr/bin/packages-{{base}}
+RUN /usr/bin/prep-{{base}}
 ENTRYPOINT {{entrypoint}}
 

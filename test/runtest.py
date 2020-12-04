@@ -1,4 +1,12 @@
 #!/router/bin/python3.8.2_mcpre-v1 -u
+# -----------------------------------------------------------------------------
+# runtest.py -- Framework for running tests
+#
+# December 2020, Patrick Smears
+#
+# Copyright (c) 2020 by Cisco Systems, Inc.
+# All rights reserved.
+# -----------------------------------------------------------------------------
 
 import os
 import sys
@@ -75,22 +83,19 @@ def perform_tests():
             base_df = "{}.dockerfile".format(base)
             base_dfpath = os.path.join(dockerfile_dir, base_df)
 
-            for f in files:
+            for f in files + test_files:
                 f_base = f.format(base=base)
-                shutil.copyfile(
-                    os.path.join("..", f_base),
-                    os.path.join(context_dir, os.path.basename(f_base)),
-                )
-                shutil.copymode(
-                    os.path.join("..", f_base),
-                    os.path.join(context_dir, os.path.basename(f_base)),
-                )
+                src = os.path.join(script_root, f_base)
+                dst = os.path.join(context_dir, f_base)
+                os.makedirs(os.path.dirname(dst), exist_ok=True)
+                shutil.copyfile(src, dst)
+                shutil.copymode(src, dst)
             for i in isos:
                 shutil.copyfile(i, os.path.join(context_dir, os.path.basename(i)))
 
             create_dockerfile(base_dfpath, base, extra_files=test_files, isos=isos, entrypoint="test-xr-image-extract-rpms")
             os.system("grep '' '{}'".format(base_dfpath))
-            sys.exit(99)
+            os.system("find '{}'".format(context_dir))
             cmd = buildah + ["bud", "-t", imagename, "-f", base_dfpath, context_dir]
             res = subprocess.run(cmd, capture_output=True)
             sys.stderr.buffer.write(res.stderr)
