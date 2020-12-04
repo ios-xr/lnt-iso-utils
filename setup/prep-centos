@@ -1,2 +1,1 @@
-yum install -y sudo
-sudo yum -y install $(cat "$1")
+yum -y install python3 genisoimage cpio

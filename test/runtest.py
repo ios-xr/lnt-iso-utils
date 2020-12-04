@@ -16,12 +16,14 @@ podman = ["sudo", "/ecs/utils/container/bin/supodman"]
 
 imagename = "xrscripttest"
 
-bases = {"debian": {"from": "debian:9.13-slim"}, "centos": {"from": "centos:7.0.1406"}}
+bases = {"debian": {"name": "Debian 9",
+                    "from": "debian:9.13-slim"},
+         "centos": {"name": "CentOS 7",
+                    "from": "centos:7.0.1406"}}
 
 files = [
     "xr-image-extract-rpms",
     "setup/prep-{base}",
-    "setup/packages-{base}",
 ]
 
 test_files = [
@@ -34,19 +36,30 @@ isos = [
 ]
 
 tenv = jinja2.Environment(loader=jinja2.FileSystemLoader(script_root))
-template = tenv.get_template("test/template.dockerfile")
-
+dockerfile_template = tenv.get_template("test/template.dockerfile")
+readme_template = tenv.get_template("test/template.README.md")
 
 def create_dockerfile(fname, base, *, extra_files=[], isos=[], entrypoint="/bin/bash"):
     base_info = bases[base]
     with open(fname, "w") as f:
         f.write(
-            template.render(
+            dockerfile_template.render(
                 base=base,
                 from_=base_info["from"],
                 files=[f.format(base=base) for f in (files + extra_files)],
                 isos=[os.path.basename(i) for i in isos],
                 entrypoint=entrypoint,
+            )
+        )
+
+def create_readme(fname):
+    for basename, base in bases.items():
+        with open(os.path.join(script_root, "setup/prep-{}".format(basename)), "r") as f:
+            base["prep"] = "".join("    "+line for line in f)
+    with open(fname, "w") as f:
+        f.write(
+            readme_template.render(
+                bases=bases.values(),
             )
         )
 
@@ -112,9 +125,11 @@ def generate_files(update):
         dockerfile = os.path.join(tmpdir, "dockerfile")
         create_dockerfile(dockerfile, "debian")
         readme = os.path.join(tmpdir, "README.md")
-        #create_readme(readme)
-        errors = compare_files(dockerfile, "dockerfile", update)
-    if errors:
+        create_readme(readme)
+        all_ok = (compare_files(dockerfile, "dockerfile", update) and
+                  compare_files(readme, "README.md", update))
+                  
+    if not all_ok:
         sys.exit(2)
     
         

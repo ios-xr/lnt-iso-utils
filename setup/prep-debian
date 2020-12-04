@@ -1,3 +1,2 @@
 apt-get update
-apt-get install -y sudo
-sudo apt-get install -y $(cat "$1")
+apt-get install -y python3 genisoimage cpio
