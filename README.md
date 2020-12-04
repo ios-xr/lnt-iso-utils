@@ -1,3 +1,11 @@
+<!-- ===================================================================== -->
+<!-- README.md -- Documentation for extraction tool                        -->
+<!--                                                                       -->
+<!-- December 2020, Patrick Smears                                         -->
+<!--                                                                       -->
+<!-- Copyright (c) 2020 by Cisco Systems, Inc.                             -->
+<!-- All rights reserved.                                                  -->
+<!-- ===================================================================== -->
 
 # Cisco IOS XR LNT RPM extraction tool
 
@@ -40,3 +48,7 @@ The RPMs may go into subdirectories of that directory; do not rely on the exact 
     find <output-dir> -name "*.rpm" -type f
 
 to find all of the extracted RPM files.
+
+---
+
+Copyright (c) 2020 by Cisco Systems, Inc. All rights reserved.

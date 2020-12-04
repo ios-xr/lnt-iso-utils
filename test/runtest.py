@@ -131,8 +131,8 @@ def generate_files(update):
         create_dockerfile(dockerfile, "debian")
         readme = os.path.join(tmpdir, "README.md")
         create_readme(readme)
-        all_ok = (compare_files(dockerfile, "dockerfile", update) and
-                  compare_files(readme, "README.md", update))
+        all_ok = all([compare_files(dockerfile, "dockerfile", update),
+                      compare_files(readme, "README.md", update)])
                   
     if not all_ok:
         sys.exit(2)
