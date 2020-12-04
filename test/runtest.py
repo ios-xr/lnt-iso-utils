@@ -128,11 +128,11 @@ def compare_files(f1, f2, update):
             
 def generate_files(update):
     with tempfile.TemporaryDirectory() as tmpdir:
-        dockerfile = os.path.join(tmpdir, "dockerfile")
+        dockerfile = os.path.join(tmpdir, "Dockerfile")
         create_dockerfile(dockerfile, "debian")
         readme = os.path.join(tmpdir, "README.md")
         create_readme(readme)
-        all_ok = all([compare_files(dockerfile, "dockerfile", update),
+        all_ok = all([compare_files(dockerfile, "Dockerfile", update),
                       compare_files(readme, "README.md", update)])
                   
     if not all_ok:
@@ -147,6 +147,11 @@ if __name__ == '__main__':
     parser.add_argument("--test", action="store_true", help="Run container-based tests")
 
     args = parser.parse_args()
+
+    # If nothing specified, go with some defaults:
+    if not (args.test or args.update or args.verify):
+        args.verify = True
+        args.test = True
 
     if args.test:
         perform_tests()
