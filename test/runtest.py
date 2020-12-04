@@ -63,7 +63,7 @@ def create_dockerfile(fname, base, *, extra_files=[], isos=[], entrypoint="/bin/
 def create_readme(fname):
     for basename, base in bases.items():
         with open(os.path.join(script_root, "setup/prep-{}".format(basename)), "r") as f:
-            base["prep"] = "".join("    "+line for line in f)
+            base["prep"] = "".join("    "+line for line in f if not line.startswith("#-"))
     with open(fname, "w") as f:
         f.write(
             readme_template.render(
@@ -105,8 +105,9 @@ def perform_tests():
             else:
                 imageid = res.stdout
 
-            cmd = podman + ["run", imagename]
-            subprocess.run(cmd)
+            subprocess.run(podman + ["run", "--name", imagename, imagename])
+            subprocess.run(podman + ["rm", imagename])
+            subprocess.run(podman + ["rmi", imagename])
 
 def compare_files(f1, f2, update):
     result = False
