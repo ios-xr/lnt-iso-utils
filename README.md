@@ -34,9 +34,9 @@ Run the following (possibly with `sudo`) to install the required packages:
 
 ## Running
 
-It can be run as follows:
+The tool can be run as follows:
 
-    /auto/ljam/getrpms-latest/xr-image-extract-rpms --output-dir <output-dir> <iso-path>
+    ./xr-image-extract-rpms --output-dir <output-dir> <iso-path>
 
 It will put all the RPMs found in the specified ISO into the specified
 directory.
